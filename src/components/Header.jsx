@@ -3,7 +3,7 @@ import Search from "./Search";
 
 const Header = ({ setSearchValue }) => {
   return (
-    <header className="mx- mb-12 flex w-100 items-center gap-10 px-5 py-8 md:w-170 md:justify-between lg:w-280">
+    <header className="mx-auto mb-12 flex w-100 items-center justify-center gap-10 px-5 py-8 md:w-170 md:justify-between lg:w-280">
       <Link to="/" className="flex cursor-pointer gap-3 lg:gap-7">
         <svg
           width="36"
