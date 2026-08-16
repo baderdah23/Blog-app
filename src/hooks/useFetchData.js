@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 export const useFetchData = () => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [data, setData] = useState([]);
   const [result, setResult] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -13,11 +14,13 @@ export const useFetchData = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `https://gnews.io/api/v4/top-headlines?category=technology&max=6&page=${page}&lang=ar&apikey=${import.meta.env.VITE_API_KEY}`,
-      );
+      const response = await fetch(`${backendUrl}/api/news?page=${page}`);
 
       const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.errors?.[0] || "Failed to load news.");
+      }
+
       if (responseData.errors) {
         throw new Error(responseData.errors[0]);
       }
