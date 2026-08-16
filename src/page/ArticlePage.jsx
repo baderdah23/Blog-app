@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { NotFoundPage } from "./NotFoundPage";
 
 export const ArticlePage = ({ result, loading }) => {
+  const backendUrl =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
   const [articleContent, setArticleContent] = useState([]);
   const [articleLoading, setArticleLoading] = useState(false);
   const { articleTitle } = useParams();
@@ -20,7 +22,7 @@ export const ArticlePage = ({ result, loading }) => {
       return;
     }
     const response = await fetch(
-      `http://localhost:3000/api/article?url=${encodeURIComponent(articleData?.url)}`,
+      `${backendUrl}/api/article?url=${encodeURIComponent(articleData?.url)}`,
     );
     const content = await response.json();
     setArticleContent(content);

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 export const useFetchData = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = "http://localhost:3001";
+
   const [data, setData] = useState([]);
   const [result, setResult] = useState([]);
   const [searchValue, setSearchValue] = useState("");
