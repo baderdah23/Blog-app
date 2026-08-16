@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 export const useFetchData = () => {
   const backendUrl = "http://localhost:3001";
-
   const [data, setData] = useState([]);
   const [result, setResult] = useState([]);
   const [searchValue, setSearchValue] = useState("");
