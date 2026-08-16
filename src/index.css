@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100..900&display=swap");
+@import "tailwindcss";
+
+body {
+  /* max-width: 1250px;
+  margin: 0 auto; */
+  font-family: "Noto Kufi Arabic", sans-serif;
+}
+
+button {
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+button:active {
+  transform: scale(0.95);
+}
