@@ -31,6 +31,9 @@ export const useFetchData = () => {
         setData((prev) =>
           page === 1 ? nextArticles : [...prev, ...nextArticles],
         );
+        setResult((prev) =>
+          page === 1 ? nextArticles : [...prev, ...nextArticles],
+        );
       }
     } catch (error) {
       setError(error.message);

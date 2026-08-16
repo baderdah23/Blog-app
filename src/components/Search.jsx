@@ -1,7 +1,4 @@
-import { useFetchData } from "../hooks/useFetchData";
-
-const Search = () => {
-  const { setSearchValue } = useFetchData();
+const Search = ({ setSearchValue }) => {
   const onChangeHandler = (e) => {
     setSearchValue(e.target.value);
   };
