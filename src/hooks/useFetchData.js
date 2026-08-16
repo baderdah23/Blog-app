@@ -6,15 +6,33 @@ export const useFetchData = () => {
   const [result, setResult] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [page, setPage] = useState(1);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+
+    const handleChange = () => {
+      setIsSmallScreen(mediaQuery.matches);
+    };
+
+    handleChange();
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, []);
 
   const loadData = async () => {
     setError(null);
     setLoading(true);
-
+    const max = isSmallScreen ? 2 : 6;
     try {
-      const response = await fetch(`${backendUrl}/api/news?page=${page}`);
+      const response = await fetch(
+        `${backendUrl}/api/news?page=${page}&max=${max}`,
+      );
 
       const responseData = await response.json();
       if (!response.ok) {
