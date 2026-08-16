@@ -97,56 +97,62 @@ export const ArticlePage = ({ result, loading }) => {
                   </span>
                   <span>750x100</span>
                 </div>
-                <div className="flex flex-col gap-5">
-                  {articleContent?.article?.content[2]?.image && (
-                    <img
-                      className="max-h-115.5 w-150 self-center rounded-lg"
-                      src={articleContent?.article?.content[2]?.image}
-                      alt="article picture"
-                      loading="lazy"
-                    />
-                  )}
+                {articleContent?.article?.content[2] && (
+                  <div className="flex flex-col gap-5">
+                    {articleContent?.article?.content[2]?.image && (
+                      <img
+                        className="max-h-115.5 w-150 self-center rounded-lg"
+                        src={articleContent?.article?.content[2]?.image}
+                        alt="article picture"
+                        loading="lazy"
+                      />
+                    )}
 
-                  <h2 className="text-2xl font-semibold">
-                    {articleContent?.article?.content[2]?.title}
-                  </h2>
-                  <p className="leading-8">
-                    {articleContent?.article?.content[2]?.text}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-5">
-                  {articleContent?.article?.content[3]?.image && (
-                    <img
-                      className="max-h-115.5 w-150 self-center rounded-lg"
-                      src={articleContent?.article?.content[3]?.image}
-                      alt="article picture"
-                      loading="lazy"
-                    />
-                  )}
+                    <h2 className="text-2xl font-semibold">
+                      {articleContent?.article?.content[2]?.title}
+                    </h2>
+                    <p className="leading-8">
+                      {articleContent?.article?.content[2]?.text}
+                    </p>
+                  </div>
+                )}
+                {articleContent?.article?.content[2] && (
+                  <div className="flex flex-col gap-5">
+                    {articleContent?.article?.content[3]?.image && (
+                      <img
+                        className="max-h-115.5 w-150 self-center rounded-lg"
+                        src={articleContent?.article?.content[3]?.image}
+                        alt="article picture"
+                        loading="lazy"
+                      />
+                    )}
 
-                  <h2 className="text-2xl font-semibold">
-                    {articleContent?.article?.content[3]?.title}
-                  </h2>
-                  <p className="leading-8">
-                    {articleContent?.article?.content[3]?.text}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-5">
-                  {articleContent?.article?.content[4]?.image && (
-                    <img
-                      className="max-h-115.5 w-150 self-center rounded-lg"
-                      src={articleContent?.article?.content[4]?.image}
-                      alt="article picture"
-                      loading="lazy"
-                    />
-                  )}
-                  <h2 className="text-2xl font-semibold">
-                    {articleContent?.article?.content[4]?.text}
-                  </h2>
-                  <p className="leading-8">
-                    {articleContent?.article?.content[4]?.text}
-                  </p>
-                </div>
+                    <h2 className="text-2xl font-semibold">
+                      {articleContent?.article?.content[3]?.title}
+                    </h2>
+                    <p className="leading-8">
+                      {articleContent?.article?.content[3]?.text}
+                    </p>
+                  </div>
+                )}
+                {articleContent?.article?.content[2] && (
+                  <div className="flex flex-col gap-5">
+                    {articleContent?.article?.content[4]?.image && (
+                      <img
+                        className="max-h-115.5 w-150 self-center rounded-lg"
+                        src={articleContent?.article?.content[4]?.image}
+                        alt="article picture"
+                        loading="lazy"
+                      />
+                    )}
+                    <h2 className="text-2xl font-semibold">
+                      {articleContent?.article?.content[4]?.text}
+                    </h2>
+                    <p className="leading-8">
+                      {articleContent?.article?.content[4]?.text}
+                    </p>
+                  </div>
+                )}
 
                 <div>
                   <h2 className="text-xl font-semibold">
