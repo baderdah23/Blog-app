@@ -3,7 +3,7 @@ const Loader = ({ type }) => {
     <>
       {type === "home" ? (
         <section className="mb-15 flex flex-col items-center justify-center">
-          <div className="flex flex-wrap gap-5">
+          <div className="flex flex-wrap justify-center gap-5">
             <div className="flex w-98 flex-col gap-4 rounded-lg border-1 border-[#E8E8EA] p-4">
               <span className="h-60 w-90 rounded-lg bg-gray-300"></span>
               <div className="flex w-80 flex-col gap-5 p-2">
