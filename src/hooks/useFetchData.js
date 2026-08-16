@@ -6,7 +6,9 @@ export const useFetchData = () => {
   const [result, setResult] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [page, setPage] = useState(1);
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    window.matchMedia("(max-width: 767px)").matches,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
