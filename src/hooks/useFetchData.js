@@ -47,11 +47,11 @@ export const useFetchData = () => {
   }, [page]);
 
   useEffect(() => {
-    const searchText = searchValue.trim().toLowerCase();
+    const searchText = searchValue.replace(/[أإآ]/g, "ا").trim().toLowerCase();
 
     setResult(
       data.filter((article) =>
-        article.title.toLowerCase().includes(searchText),
+        article.title.replace(/[أإآ]/g, "ا").toLowerCase().includes(searchText),
       ),
     );
   }, [data, searchValue]);

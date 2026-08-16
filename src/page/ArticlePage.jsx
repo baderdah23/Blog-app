@@ -3,7 +3,7 @@ import Loader from "../components/Loader";
 import { useEffect, useState } from "react";
 import { NotFoundPage } from "./NotFoundPage";
 
-export const ArticlePage = ({ result, loading }) => {
+export const ArticlePage = ({ result, loading, setSearchValue }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [articleContent, setArticleContent] = useState([]);
   const [articleLoading, setArticleLoading] = useState(false);
@@ -11,8 +11,7 @@ export const ArticlePage = ({ result, loading }) => {
 
   const articleData = result?.find((article) => article.title === articleTitle);
 
-  console.log(result);
-  console.log(articleData);
+  setSearchValue("");
 
   const getArticleContent = async () => {
     setArticleLoading(true);
