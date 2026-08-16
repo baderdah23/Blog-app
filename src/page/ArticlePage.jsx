@@ -11,8 +11,6 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
 
   const articleData = result?.find((article) => article.title === articleTitle);
 
-  setSearchValue("");
-
   const getArticleContent = async () => {
     setArticleLoading(true);
     if (!articleData?.url) {
@@ -28,6 +26,7 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
   };
 
   useEffect(() => {
+    setSearchValue("");
     getArticleContent();
   }, [articleData]);
   return (
