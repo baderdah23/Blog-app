@@ -56,5 +56,5 @@ export const useFetchData = () => {
     );
   }, [data, searchValue]);
 
-  return { data, result, loading, error, setSearchValue, setPage };
+  return { data, result, loading, error, searchValue, setSearchValue, setPage };
 };

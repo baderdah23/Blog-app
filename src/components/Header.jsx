@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import Search from "./Search";
 
-const Header = ({ setSearchValue }) => {
+const Header = ({ setSearchValue, searchValue }) => {
   return (
     <header className="mx-auto mb-12 flex w-100 items-center justify-center gap-10 px-5 py-8 md:w-170 md:justify-between lg:w-280">
       <Link to="/" className="flex cursor-pointer gap-3 lg:gap-7">
@@ -35,7 +35,7 @@ const Header = ({ setSearchValue }) => {
       <Link to="/" className="text-[#3B3C4A]">
         Home
       </Link>
-      <Search setSearchValue={setSearchValue} />
+      <Search setSearchValue={setSearchValue} searchValue={searchValue} />
     </header>
   );
 };

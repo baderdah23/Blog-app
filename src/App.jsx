@@ -5,12 +5,13 @@ import { ArticlePage, Home, NotFoundPage } from "./page";
 import { useFetchData } from "./hooks/useFetchData";
 
 function App() {
-  const { result, loading, error, setSearchValue, setPage } = useFetchData();
+  const { result, loading, error, searchValue, setSearchValue, setPage } =
+    useFetchData();
 
   return (
     <>
       <BrowserRouter>
-        <Header setSearchValue={setSearchValue} />
+        <Header setSearchValue={setSearchValue} searchValue={searchValue} />
         <Routes>
           <Route
             path="/"
