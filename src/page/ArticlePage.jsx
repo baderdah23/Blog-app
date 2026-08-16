@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { NotFoundPage } from "./NotFoundPage";
 
 export const ArticlePage = ({ result, loading }) => {
-  const backendUrl =
-    "https://article-extractor-backend-production.up.railway.app";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [articleContent, setArticleContent] = useState([]);
   const [articleLoading, setArticleLoading] = useState(false);
   const { articleTitle } = useParams();
