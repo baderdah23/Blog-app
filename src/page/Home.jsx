@@ -21,9 +21,10 @@ export const Home = ({ result, loading, error, setPage }) => {
                 <>
                   <div className="flex flex-wrap justify-center gap-5">
                     {result?.length !== 0 &&
-                      result?.map((article) => (
+                      result?.map((article, index) => (
                         <ArticleCard
                           key={article.id}
+                          index={index}
                           title={article.title}
                           img={article.image}
                           authorImg={article.source.url}

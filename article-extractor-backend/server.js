@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
+const GNEWS_API_KEY = process.env.GNEWS_API_KEY;
 
 app.use(
   cors({
@@ -89,8 +90,14 @@ function cleanText(value) {
     .replace(/اترك\s+تعليقاً|إلغاء\s+الرد/gi, "")
     .replace(/لن\s+يتم\s+نشر\s+عنوان\s+بريدك\s+الإلكتروني\.?/gi, "")
     .replace(/الحقول\s+الإلزامية\s+مشار\s+إليها\s+بـ\s*\*?/gi, "")
-    .replace(/\[x\]\s*أعلمني\s+(?:بمتابعة\s+التعليقات|بالمواضيع\s+الجديدة).*/gi, "")
-    .replace(/يقول\s+.+?:\s*(?:يناير|فبراير|مارس|أبريل|مايو|يونيو|يوليو|أغسطس|سبتمبر|أكتوبر|نوفمبر|ديسمبر|\d+).+?الساعة\s+\d+:\d+.*$/gm, "")
+    .replace(
+      /\[x\]\s*أعلمني\s+(?:بمتابعة\s+التعليقات|بالمواضيع\s+الجديدة).*/gi,
+      "",
+    )
+    .replace(
+      /يقول\s+.+?:\s*(?:يناير|فبراير|مارس|أبريل|مايو|يونيو|يوليو|أغسطس|سبتمبر|أكتوبر|نوفمبر|ديسمبر|\d+).+?الساعة\s+\d+:\d+.*$/gm,
+      "",
+    )
     .replace(/حولنا\s*\/\s*About us/gi, "")
     .replace(/أعلن معنا\s*\/\s*Advertise with us/gi, "")
     .replace(/أرشيف النسخة المطبوعة/gi, "")
@@ -286,9 +293,7 @@ function isBoilerplateBlock(block) {
   const combined = `${title} ${text}`;
 
   if (
-    /جميع الحقوق محفوظة|حقوق النشر|كل الحقوق محفوظة|Copyright/i.test(
-      combined,
-    )
+    /جميع الحقوق محفوظة|حقوق النشر|كل الحقوق محفوظة|Copyright/i.test(combined)
   )
     return true;
   if (
@@ -590,6 +595,170 @@ function titleFromTarget(target) {
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
+});
+
+// ---------------------------------------------------------------------------
+// GNews caching / dedupe / quota-cooldown layer.
+//
+// GNews' free tier only allows 100 requests/day and 1 request/second. The
+// previous implementation forwarded every single /api/news call straight to
+// GNews and simply mirrored back whatever status GNews returned - so any
+// repeated call from the client (page reloads, React StrictMode invoking
+// effects twice in dev, revisiting the same page, etc.) burned through the
+// daily quota and then got stuck returning 429 for the rest of the day.
+//
+// This layer makes sure:
+//   1. Identical requests within NEWS_CACHE_TTL_MS are served from memory
+//      instead of calling GNews again.
+//   2. Concurrent requests for the same page are collapsed into a single
+//      upstream call ("single-flight").
+//   3. Once GNews returns 429, we stop calling it entirely until the quota
+//      resets (00:00 UTC) and instead serve the last cached data we have
+//      (even if slightly stale) rather than hammering GNews further.
+// ---------------------------------------------------------------------------
+
+const NEWS_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+const newsCache = new Map(); // page -> { payload, fetchedAt }
+const inFlightNewsRequests = new Map(); // page -> Promise<payload>
+let quotaExceededUntil = 0; // epoch ms; skip calling GNews while now < this
+
+function msUntilNextUtcMidnight() {
+  const now = new Date();
+  const next = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + 1,
+      0,
+      0,
+      0,
+      0,
+    ),
+  );
+  return next.getTime() - now.getTime();
+}
+
+async function fetchNewsFromGNews(page) {
+  const params = new URLSearchParams({
+    category: "technology",
+    max: "6",
+    page: String(page),
+    lang: "ar",
+    apikey: GNEWS_API_KEY,
+  });
+
+  const response = await fetch(
+    `https://gnews.io/api/v4/top-headlines?${params.toString()}`,
+    { signal: AbortSignal.timeout(15000) },
+  );
+
+  const payload = await response.json();
+
+  if (response.status === 429) {
+    // Daily/per-second quota hit. Stop calling GNews until it resets instead
+    // of continuing to hammer it on every future request.
+    quotaExceededUntil = Date.now() + msUntilNextUtcMidnight();
+    const err = new Error("GNews quota exceeded.");
+    err.status = 429;
+    err.payload = payload;
+    throw err;
+  }
+
+  if (!response.ok) {
+    const err = new Error(
+      `GNews request failed with status ${response.status}`,
+    );
+    err.status = response.status;
+    err.payload = payload;
+    throw err;
+  }
+
+  return payload;
+}
+
+async function getNewsPage(page) {
+  const cached = newsCache.get(page);
+  const isFresh = cached && Date.now() - cached.fetchedAt < NEWS_CACHE_TTL_MS;
+
+  if (isFresh) {
+    return { payload: cached.payload, fromCache: true, stale: false };
+  }
+
+  // Quota is known to be exhausted for today: never call GNews again until
+  // it resets. Serve whatever cache we have, even if it's stale.
+  if (Date.now() < quotaExceededUntil) {
+    if (cached) {
+      return { payload: cached.payload, fromCache: true, stale: true };
+    }
+    const err = new Error(
+      "GNews daily quota exceeded and no cached data is available.",
+    );
+    err.status = 429;
+    throw err;
+  }
+
+  // Single-flight: reuse an in-progress request for the same page instead of
+  // firing a second call to GNews.
+  if (inFlightNewsRequests.has(page)) {
+    const payload = await inFlightNewsRequests.get(page);
+    return { payload, fromCache: false, stale: false };
+  }
+
+  const requestPromise = fetchNewsFromGNews(page)
+    .then((payload) => {
+      newsCache.set(page, { payload, fetchedAt: Date.now() });
+      return payload;
+    })
+    .finally(() => {
+      inFlightNewsRequests.delete(page);
+    });
+
+  inFlightNewsRequests.set(page, requestPromise);
+
+  try {
+    const payload = await requestPromise;
+    return { payload, fromCache: false, stale: false };
+  } catch (error) {
+    // GNews failed (quota, network, etc.) - fall back to stale cache rather
+    // than breaking the UI if we have something to show.
+    if (cached) {
+      return { payload: cached.payload, fromCache: true, stale: true };
+    }
+    throw error;
+  }
+}
+
+app.get("/api/news", async (req, res) => {
+  const pageValue = Number.parseInt(String(req.query.page ?? "1"), 10);
+  const page = Number.isNaN(pageValue) || pageValue < 1 ? 1 : pageValue;
+
+  if (!GNEWS_API_KEY) {
+    return res.status(500).json({ error: "Missing GNEWS_API_KEY on server." });
+  }
+
+  try {
+    const { payload, fromCache, stale } = await getNewsPage(page);
+    res.set("X-Cache", fromCache ? (stale ? "STALE" : "HIT") : "MISS");
+    return res.json(payload);
+  } catch (error) {
+    const status = error?.status || 500;
+
+    if (status === 429) {
+      res.set(
+        "Retry-After",
+        String(Math.ceil(msUntilNextUtcMidnight() / 1000)),
+      );
+      return res.status(429).json({
+        error: "GNews daily quota reached. Please try again after 00:00 UTC.",
+        details: error.payload || error.message,
+      });
+    }
+
+    return res.status(status).json({
+      error: "Failed to fetch top headlines.",
+      details: error?.payload || error?.message || "Unknown error",
+    });
+  }
 });
 
 app.get("/api/article", async (req, res) => {

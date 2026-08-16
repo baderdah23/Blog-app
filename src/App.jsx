@@ -1,8 +1,10 @@
+import { lazy } from "react";
 import Header from "./components/Header";
-
 import { BrowserRouter, Routes, Route } from "react-router";
-import { ArticlePage, Home, NotFoundPage } from "./page";
+import { Home } from "./page";
 import { useFetchData } from "./hooks/useFetchData";
+const ArticlePage = lazy(() => import("./page/ArticlePage"));
+const NotFoundPage = lazy(() => import("./page/NotFoundPage"));
 
 function App() {
   const { result, loading, error, searchValue, setSearchValue, setPage } =

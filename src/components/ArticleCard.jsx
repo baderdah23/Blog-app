@@ -1,13 +1,14 @@
 import { Link } from "react-router";
 
-function ArticleCard({ title, img, authorImg, authorName, date }) {
+function ArticleCard({ index, title, img, authorImg, authorName, date }) {
   return (
     <div className="flex w-98 flex-col gap-4 rounded-lg border-1 border-[#E8E8EA] p-4">
       <img
         className="h-60 w-90 rounded-lg"
         src={img}
         alt="article picture"
-        loading="lazy"
+        loading={index > 2 ? "lazy" : "eager"}
+        fetchPriority={index < 3 ? "high" : "auto"}
       />
       <div className="flex w-90 flex-col gap-5 p-2">
         <span className="w-fit rounded-md bg-[#4B6BFB0D] px-2.5 py-1 font-medium text-[#4B6BFB]">
