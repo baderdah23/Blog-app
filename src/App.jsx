@@ -25,7 +25,13 @@ function App() {
           />
           <Route
             path="/:articleTitle"
-            element={<ArticlePage result={result} loading={loading} />}
+            element={
+              <ArticlePage
+                result={result}
+                loading={loading}
+                setSearchValue={setSearchValue}
+              />
+            }
           />
           <Route path="/*" element={<NotFoundPage />} />
         </Routes>
