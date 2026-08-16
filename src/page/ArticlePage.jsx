@@ -26,7 +26,7 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
   };
 
   useEffect(() => {
-    setSearchValue(" ");
+    setSearchValue("");
     getArticleContent();
   }, [articleData]);
   return (

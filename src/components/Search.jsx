@@ -8,7 +8,7 @@ const Search = ({ setSearchValue, searchValue }) => {
       <input
         type="search"
         name="search"
-        defaultValue={searchValue}
+        value={searchValue}
         placeholder="Search"
         className="h-9 w-41.5 rounded-md border-none bg-[#F4F4F5] p-2 pr-8 outline-none"
         onChange={onChangeHandler}
