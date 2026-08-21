@@ -12,8 +12,6 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
     {
       title: "مقدمة ونظرة عامة على الموضوع",
       text: "في ظل التطورات التكنولوجية السريعة التي يشهدها العالم اليوم، أصبحت هذه التقنيات جزءاً لا يتجزأ من حياتنا اليومية. تساعدنا هذه الحلول على تحسين الكفاءة وتسهيل المهام اليومية بشكل ملحوظ في ظل التطورات التكنولوجية السريعة التي يشهدها العالم اليوم، أصبحت هذه التقنيات جزءاً لا يتجزأ من حياتنا اليومية. تساعدنا هذه الحلول على تحسين الكفاءة وتسهيل المهام اليومية بشكل ملحوظ.",
-      image:
-        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=60",
     },
     {
       title: "التأثير المستقبلي والحلول الذكية",
@@ -67,18 +65,6 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
               <div className="flex w-full max-w-4xl flex-col gap-10 p-5">
                 {dummyContent.map((item, index) => (
                   <div key={index} className="flex flex-col gap-5">
-                    {index === 0 ? null : (
-                      <>
-                        {item?.image && (
-                          <img
-                            className="max-h-115.5 w-150 self-center rounded-lg"
-                            src={item.image}
-                            alt="article section picture"
-                            loading="lazy"
-                          />
-                        )}
-                      </>
-                    )}
                     {item?.image && (
                       <img
                         className="max-h-115.5 w-150 self-center rounded-lg"
