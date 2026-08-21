@@ -45,7 +45,7 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
                 <h1 className="text-4xl font-semibold">{articleData?.title}</h1>
                 <div className="flex items-center gap-5">
                   <img
-                    src="https://t4.ftcdn.net/jpg/05/42/36/11/360_F_542361185_VFRJWpR2FH5OiAEVveWO7oZnfSccZfD3.jpg"
+                    src={`https://www.google.com/s2/favicons?domain=${articleData.source.url}&sz=64`}
                     alt={`logo by ${articleData?.source.name}`}
                     loading="lazy"
                   />
