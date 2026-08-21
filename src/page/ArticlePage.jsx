@@ -1,43 +1,42 @@
 import { useParams } from "react-router";
 import Loader from "../components/Loader";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NotFoundPage } from "./NotFoundPage";
 
 export const ArticlePage = ({ result, loading, setSearchValue }) => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const [articleContent, setArticleContent] = useState([]);
-  const [articleLoading, setArticleLoading] = useState(false);
   const { articleTitle } = useParams();
 
   const articleData = result?.find((article) => article.title === articleTitle);
 
-  const getArticleContent = async () => {
-    setArticleLoading(true);
-    if (!articleData?.url) {
-      setArticleLoading(false);
-      return;
-    }
-    const response = await fetch(
-      `${backendUrl}/api/article?url=${encodeURIComponent(articleData?.url)}`,
-    );
-    const content = await response.json();
-    setArticleContent(content);
-    setArticleLoading(false);
-  };
-
-  const contentList = articleContent?.article?.content || [];
-
+  const dummyContent = [
+    {
+      title: "مقدمة ونظرة عامة على الموضوع",
+      text: "في ظل التطورات التكنولوجية السريعة التي يشهدها العالم اليوم، أصبحت هذه التقنيات جزءاً لا يتجزأ من حياتنا اليومية. تساعدنا هذه الحلول على تحسين الكفاءة وتسهيل المهام اليومية بشكل ملحوظ.",
+      image:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=60",
+    },
+    {
+      title: "التأثير المستقبلي والحلول الذكية",
+      text: "الاعتماد على التقنيات الحديثة يفتح آفاقاً جديدة للابتكار والتطوير. التوجه نحو الأتمتة واستخدام الذكاء الاصطناعي يسهم في خلق بيئة عمل أكثر مرونة وإنتاجية مع تقليل الأخطاء البشرية.",
+      image:
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60",
+    },
+    {
+      title: "التحديات وأفضل الممارسات",
+      text: "بالرغم من المزايا العديدة، تتطلب هذه التغييرات استراتيجيات حذرة للتعامل مع التحديات مثل الأمان الرقمي وحماية البيانات، لضمان استمرارية النجاح والاستفادة القصوى من الأدوات المتاحة.",
+    },
+  ];
   useEffect(() => {
     setSearchValue("");
-    getArticleContent();
-  }, [articleData]);
+  }, []);
+
   return (
     <div className="mb-10 flex flex-col items-center gap-6">
-      {loading || articleLoading ? (
+      {loading ? (
         <Loader />
       ) : (
         <>
-          {articleContent.length || articleData ? (
+          {articleData ? (
             <>
               <div className="flex flex-col gap-5 self-start p-2">
                 <span className="w-fit rounded-md bg-[#4B6BFB] px-2.5 py-1 font-medium text-white">
@@ -66,7 +65,7 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
                 loading="lazy"
               />
               <div className="flex w-full max-w-4xl flex-col gap-10 p-5">
-                {contentList.map((item, index) => (
+                {dummyContent.map((item, index) => (
                   <div key={index} className="flex flex-col gap-5">
                     {item?.image && (
                       <img
