@@ -46,7 +46,7 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
                 <div className="flex items-center gap-5">
                   <img
                     className="h-12 w-12 rounded-lg"
-                    src={`https://www.google.com/s2/favicons?domain=${articleData?.source.url}&sz=64`}
+                    src={`https://www.google.com/s2/favicons?domain=${articleData.source.url}&sz=64`}
                     alt={`logo by ${articleData?.source.name}`}
                     loading="lazy"
                   />
@@ -54,7 +54,7 @@ export const ArticlePage = ({ result, loading, setSearchValue }) => {
                     {articleData?.source.name}
                   </span>
                   <span className="text-[#696A75]">
-                    {articleData?.publishedAt.split("T")[0]}
+                    {articleData?.publishedAt?.split("T")[0]}
                   </span>
                 </div>
               </div>
