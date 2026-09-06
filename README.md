@@ -1,16 +1,36 @@
-# React + Vite
+# Modern Blog App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive, high-performance blog platform optimized for modern readers and content creators. Includes smart client-side search indexing and seamless article loading flows.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Fast Search Indexing**: Instantly filters articles dynamically based on keywords.
+- **Robust UI States**: Dedicated skeleton loading states, empty result handlers, and error boundaries.
+- **Fully Responsive**: Highly adaptable design scaling elegantly from small smartphones to wide screens.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React 19 (Vite)
+- **Styling**: Tailwind CSS & Modern variables
+- **Backend Service**: Article extractor backend API
+- **Icons & Loaders**: Lucide React custom spinners
 
-## Expanding the ESLint configuration
+## 📦 Setup & Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Clone the repository**:
+   ```bash
+   cd Blog-app
+   ```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Set up local Environment variables**:
+   Create a `.env` file and configure:
+   ```env
+   VITE_API_URL=your_backend_api_url_here
+   ```
+4. **Start the local dev server**:
+   ```bash
+   npm run dev
+   ```
