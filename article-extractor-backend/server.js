@@ -638,10 +638,19 @@ function msUntilNextUtcMidnight() {
   return next.getTime() - now.getTime();
 }
 
-async function fetchNewsFromGNews(page) {
+const NEWS_MAX_DEFAULT = 6;
+const NEWS_MAX_LIMIT = 10; // GNews caps "max" at 10 per request on the free tier
+
+function parseNewsMax(rawMax) {
+  const value = Number.parseInt(String(rawMax ?? NEWS_MAX_DEFAULT), 10);
+  if (Number.isNaN(value) || value < 1) return NEWS_MAX_DEFAULT;
+  return Math.min(value, NEWS_MAX_LIMIT);
+}
+
+async function fetchNewsFromGNews(page, max) {
   const params = new URLSearchParams({
     category: "technology",
-    max: "6",
+    max: String(max),
     page: String(page),
     lang: "ar",
     apikey: GNEWS_API_KEY,
@@ -676,8 +685,9 @@ async function fetchNewsFromGNews(page) {
   return payload;
 }
 
-async function getNewsPage(page) {
-  const cached = newsCache.get(page);
+async function getNewsPage(page, max) {
+  const cacheKey = `${page}:${max}`;
+  const cached = newsCache.get(cacheKey);
   const isFresh = cached && Date.now() - cached.fetchedAt < NEWS_CACHE_TTL_MS;
 
   if (isFresh) {
@@ -697,23 +707,23 @@ async function getNewsPage(page) {
     throw err;
   }
 
-  // Single-flight: reuse an in-progress request for the same page instead of
-  // firing a second call to GNews.
-  if (inFlightNewsRequests.has(page)) {
-    const payload = await inFlightNewsRequests.get(page);
+  // Single-flight: reuse an in-progress request for the same page+max combo
+  // instead of firing a second call to GNews.
+  if (inFlightNewsRequests.has(cacheKey)) {
+    const payload = await inFlightNewsRequests.get(cacheKey);
     return { payload, fromCache: false, stale: false };
   }
 
-  const requestPromise = fetchNewsFromGNews(page)
+  const requestPromise = fetchNewsFromGNews(page, max)
     .then((payload) => {
-      newsCache.set(page, { payload, fetchedAt: Date.now() });
+      newsCache.set(cacheKey, { payload, fetchedAt: Date.now() });
       return payload;
     })
     .finally(() => {
-      inFlightNewsRequests.delete(page);
+      inFlightNewsRequests.delete(cacheKey);
     });
 
-  inFlightNewsRequests.set(page, requestPromise);
+  inFlightNewsRequests.set(cacheKey, requestPromise);
 
   try {
     const payload = await requestPromise;
@@ -731,13 +741,14 @@ async function getNewsPage(page) {
 app.get("/api/news", async (req, res) => {
   const pageValue = Number.parseInt(String(req.query.page ?? "1"), 10);
   const page = Number.isNaN(pageValue) || pageValue < 1 ? 1 : pageValue;
+  const max = parseNewsMax(req.query.max);
 
   if (!GNEWS_API_KEY) {
     return res.status(500).json({ error: "Missing GNEWS_API_KEY on server." });
   }
 
   try {
-    const { payload, fromCache, stale } = await getNewsPage(page);
+    const { payload, fromCache, stale } = await getNewsPage(page, max);
     res.set("X-Cache", fromCache ? (stale ? "STALE" : "HIT") : "MISS");
     return res.json(payload);
   } catch (error) {
